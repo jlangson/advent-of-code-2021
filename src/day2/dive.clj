@@ -23,7 +23,6 @@
       {:horizontal (map :horizontal)
        :depth      (- (map :depth) amount)})))
 
-
 (defn calculate-position [commands]
   (for [command commands]
     (move command {:horizontal 0 :depth 0})))
@@ -34,8 +33,20 @@
         depth (apply + (map :depth directions))]
     (* horizontal depth)))
 
-(comment
+(defn calculate [depth horizontal aim commands]
+  (if (empty? commands)
+    (* horizontal depth)
+    (let [move (first (first commands))
+          amount (Integer/parseInt (second (first commands)))]
+      (case move
+        "forward" (calculate (+ depth (* aim amount)) (+ horizontal amount) aim (rest commands))
+        "up" (calculate depth horizontal (- aim amount) (rest commands))
+        "down" (calculate depth horizontal (+ aim amount) (rest commands))))))
 
-  (read-position "src/day2/input.txt")
+(defn part-two []
+  (calculate 0 0 0 (read-position "src/day2/input.txt")))
+
+(comment
+  (map #(aim % {:horizontal 0 :depth 0 :aim 0}) (read-position "src/day2/input.txt"))
 
   )
